@@ -53,12 +53,11 @@ LETDIG [a-zA-Z0-9]
 .	{columna+=yyleng;return TOK_ERROR;}
 %%
 int main(int argc, char **argv){
-	int variable=0;	
+	int token=0;	
 	yyin=fopen(argv[1],"r");
 	yyout=fopen(argv[2],"w");
-	do{	
-		variable=yylex();
-		switch(variable)
+	for(token=yylex(); token; token=yylex()){	
+		switch(token)
 		{
 			case TOK_MAIN:
 				fprintf(yyout,"TOK_MAIN\t%d\t%s\n",TOK_MAIN,yytext);
@@ -163,9 +162,13 @@ int main(int argc, char **argv){
 				break;
 			case TOK_IDENTIFICADOR:
 				if(yyleng<=100)
-				fprintf(yyout,"TOK_IDENTIFICADOR\t%d\t%s\n",TOK_IDENTIFICADOR,yytext);
-				else
-				fprintf(yyout,"****Error en [lin %d, col %d]: identificador demasiado largo (%s)\nTOK_ERROR\t%d\t%s \n",linea,columna-yyleng,yytext,TOK_ERROR,yytext);
+				    fprintf(yyout,"TOK_IDENTIFICADOR\t%d\t%s\n",TOK_IDENTIFICADOR,yytext);
+				else{
+                    fprintf(stderr,"****Error en [lin %d, col %ld]: identificador demasiado largo (%s)",linea,columna-yyleng,yytext);
+                    fclose(yyout);
+                    fclose(yyin);
+                    return 0;
+                }
 				break;
 			case TOK_CONSTANTE_ENTERA:
 				fprintf(yyout,"TOK_CONSTANTE_ENTERA\t%d\t%s\n",TOK_CONSTANTE_ENTERA,yytext);
@@ -177,13 +180,16 @@ int main(int argc, char **argv){
 				fprintf(yyout,"TOK_FALSE\t%d\t%s\n",TOK_FALSE,yytext);
 				break;
 			case TOK_ERROR:
-				fprintf(yyout,"****Error en [lin %d, col %d]: simbolo no permitido (%s)\nTOK_ERROR\t%d\t%s \n",linea,columna-yyleng,yytext,TOK_ERROR,yytext);
+				fprintf(stderr,"****Error en [lin %d, col %ld]: simbolo no permitido (%s)\n",linea,columna-yyleng,yytext);
+                fclose(yyout);
+                fclose(yyin);
+                return 0;
 				break;
 			default:
 			
 			break;
 		}
-	}while(variable);
+	}
 	fclose(yyout);
 	fclose(yyin);
 	return 0;
