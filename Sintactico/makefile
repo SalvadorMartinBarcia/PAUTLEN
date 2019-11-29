@@ -1,10 +1,18 @@
-CC = gcc
-CFLAGS = -Wall
+CC = gcc -ansi -pedantic
+CFLAGS = -Wall -g
+OBJECTS = lex.yy.o y.tab.o pruebaSintactico.o
 
-
-all: lex.yy.c
-	$(CC) $(CFLAGS) -o pruebaMorfo lex.yy.c
+all: $(OBJECTS)
+	$(CC) $(CFLAGS) -o pruebaSintactico $(OBJECTS)
+pruebaSintactico.o: pruebaSintactico.c y.tab.h
+	$(CC) $(CFLAGS) -c pruebaSintactico.c
+lex.yy.o: lex.yy.c y.tab.h
+	$(CC) $(CFLAGS) -c lex.yy.c
+y.tab.o: y.tab.c
+	$(CC) $(CFLAGS) -c y.tab.c
 lex.yy.c: alfa.l
-	$flex alfa.l
+	$ flex alfa.l
+y.tab.h: alfa.y
+	$ bison -d -y -v alfa.y
 clean:
-	rm pruebaMorfo lex.yy.c
+	rm pruebaSintactico  *.o lex.yy.c y.tab.c *.h y.output
