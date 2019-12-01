@@ -134,9 +134,8 @@ union YYSTYPE
 
 	char cadena[1000];
 	int numero;
-	
 
-#line 140 "y.tab.h" /* yacc.c:1909  */
+#line 139 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

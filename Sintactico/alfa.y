@@ -11,10 +11,11 @@
 %}
 
 %union
-	{
+{
 	char cadena[1000];
 	int numero;
-	}
+}
+
 %token TOK_MAIN
 %token TOK_INT
 %token TOK_BOOLEAN
@@ -169,32 +170,4 @@ void yyerror (char const *cad)
 	if(error == 0)
 		fprintf(stdout,"**** Error sintáctico en [lin %d, col %d]\n",linea,columna-yyleng);
 	error = 0;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%%
-void yyerror (char *cad){
-		fprintf(stderr, "ERROR: %s", cad);
-		exit(1);
 }

@@ -2,6 +2,7 @@
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include <string.h>
+	#include "y.tab.h"
 	int linea=1,columna=1;
 	int flagError = 0;
 %}
