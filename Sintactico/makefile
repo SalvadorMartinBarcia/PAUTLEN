@@ -1,5 +1,5 @@
-CC = gcc -ansi -pedantic
-CFLAGS = -Wall -g
+CC = gcc
+CFLAGS = -Wall
 OBJECTS = lex.yy.o y.tab.o pruebaSintactico.o
 
 all: $(OBJECTS)
@@ -21,4 +21,4 @@ y.tab.h: alfa.y
 	$ bison -d -y -v alfa.y
 
 clean:
-	rm *.o pruebaSintactico lex.yy.c y.tab.c *.h y.output
+	rm *.o pruebaSintactico lex.yy.c y.tab.c *.h y.output mi*

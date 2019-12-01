@@ -52,7 +52,7 @@ LETDIG [a-zA-Z0-9]
 " "	{columna+=yyleng;}
 "\n"	{linea++;columna=1;}
 {LETRAS}({LETDIG})*	{columna+=yyleng;strcpy(yylval.cadena,yytext);
-if(yyleng>100){fprintf(stdout,"****Error en [lin %d, col %d]: identificador demasiado largo (%s)\n",linea,columna-yyleng,yytext);flagError=1;return TOK_ERROR;);}
+if(yyleng>100){fprintf(stdout,"****Error en [lin %d, col %d]: identificador demasiado largo (%s)\n",linea,columna-yyleng,yytext);flagError=1;return TOK_ERROR;}
 else{fprintf(yyout,";D:\t%s\n",yytext);};
 return TOK_IDENTIFICADOR;}
 ({DIGITO})+	{columna+=yyleng;yylval.numero=atoi(yytext);fprintf(yyout,";D:\t%s\n",yytext);return TOK_CONSTANTE_ENTERA;}

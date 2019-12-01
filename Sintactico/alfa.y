@@ -167,7 +167,7 @@ identificador: TOK_IDENTIFICADOR {fprintf(yyout,";R108:\t<identificador> ::= TOK
 %%
 void yyerror (char const *cad)
 {
-	if(error == 0)
+	if(flagError == 0)
 		fprintf(stdout,"**** Error sintáctico en [lin %d, col %d]\n",linea,columna-yyleng);
-	error = 0;
+	flagError = 0;
 }
