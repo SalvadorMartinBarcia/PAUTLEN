@@ -195,6 +195,6 @@ void yyerror (char const *cad)
 
 %%
 void yyerror (char *cad){
-		fprintf(stderr, "ERROR: "%s", cad);
+		fprintf(stderr, "ERROR: %s", cad);
 		exit(1);
 }
