@@ -7,19 +7,17 @@
 
 void procesa(char *buf, FILE *out) {
     INFO_SIMBOLO *info = NULL;
-    char *id = NULL;
+    char id[BUF_SIZE];
     int scan, value;
-    scan = sscanf(buf, "%ms\t%i", &id, &value);
+    scan = sscanf(buf, "%s\t%i", id, &value);
     if(scan == 2) {
         if(value < 0) {
             if(!strcmp(id, "cierre") && value == -999) {
                 fprintf(out, "cierre\n");
-                free(id);
                 CerrarFuncion();
             } else {
                 info = crear_info_simbolo(id, FUNCION, ENTERO, ESCALAR, value, 0);
                 if(info == NULL) {
-                    free(id);
                     return;
                 }
                 if(DeclararFuncion(id, info) == OK){
@@ -28,12 +26,10 @@ void procesa(char *buf, FILE *out) {
                     fprintf(out, "-1\t%s\n", id);
 
                 liberar_info_simbolo(info);
-                free(id);
             }
         } else if(value > 0) {
             info = crear_info_simbolo(id, VARIABLE, ENTERO, ESCALAR, value, 0);
             if(info == NULL) {
-                free(id);
                 return;
             }
             if(Declarar(id, info) == OK)
@@ -41,7 +37,6 @@ void procesa(char *buf, FILE *out) {
             else
                 fprintf(out, "-1\t%s\n", id);
             liberar_info_simbolo(info);
-            free(id);
         }
     } else if(scan == 1) {
         info = UsoLocal(id);
@@ -49,7 +44,6 @@ void procesa(char *buf, FILE *out) {
             fprintf(out, "%s\t%d\n", id, -1);
         else
             fprintf(out, "%s\t%d\n", id, info->adicional1);
-        free(id);
     }
 }
 
