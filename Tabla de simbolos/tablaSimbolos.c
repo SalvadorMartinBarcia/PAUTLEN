@@ -5,45 +5,46 @@ TABLA_HASH *TablaSimbolosGlobal = NULL;
 TABLA_HASH *TablaSimbolosLocal = NULL;
 
 
-STATUS Declarar(const char *id, INFO_SIMBOLO *desc_id){
-    if ( TablaSimbolosGlobal == NULL) {
-        DeclararGlobal(id, desc_id);
-        return OK;
-    }
-    else{
-        DeclararLocal(id, desc_id)
-        return OK;
-    }
-    return ERR;
+
+
+STATUS tablaSet(TABLA_HASH *tabla, const char *id, INFO_SIMBOLO *desc_id){ 
+    return insertar_simbolo(tabla, id, desc_id->categoria, desc_id->tipo, desc_id->clase, desc_id->adicional1, desc_id->adicional2);
+}
+INFO_SIMBOLO *tablaGet(TABLA_HASH *tabla, const char *id){
+    return buscar_simbolo(tabla, id);
 }
 
 
-STATUS DeclararGlobal(const char *id, INFO_SIMBOLO *desc_id){ /*eeee*/
+STATUS Declarar(const char *id, INFO_SIMBOLO *desc_id){
+    if ( TablaSimbolosLocal == NULL) {
+        return DeclararGlobal(id, desc_id);;
+    }
+    else{
+        return DeclararLocal(id, desc_id);
+    }
+}
+
+STATUS DeclararGlobal(const char *id, INFO_SIMBOLO *desc_id){
 
     /*Si no existe la tabla, se crea*/
-    if (TablaSimbolosLocal == NULL) {
+    if (TablaSimbolosGlobal == NULL) {
         TablaSimbolosGlobal = crear_tabla(TABLA_SIMBOLOS_GLOBAL_TAM);
         if(TablaSimbolosGlobal == NULL) return ERR;
     }
 
     if(buscar_simbolo(TablaSimbolosGlobal, id) == NULL){ /*Si no se encuentra, se inserta en la tabla*/
-        tablaSet(TablaSimbolosGlobal, id, desc_id);
-        return OK;
+        return tablaSet(TablaSimbolosGlobal, id, desc_id);
     }
     return ERR; 
 }
 
-
-
 STATUS DeclararLocal(const char *id, INFO_SIMBOLO *desc_id){
     
     if(buscar_simbolo(TablaSimbolosLocal, id) == NULL){ /*Si no se encuentra, se inserta en la tabla*/
-        tablaSet(TablaSimbolosLocal, id, desc_id);
-        return OK;
+        return tablaSet(TablaSimbolosLocal, id, desc_id);;
     }
     return ERR;
 }
-
 
 INFO_SIMBOLO *UsoGlobal(const char *id){
     INFO_SIMBOLO *info = NULL;
@@ -55,9 +56,6 @@ INFO_SIMBOLO *UsoGlobal(const char *id){
     return info;
 }
 
-
-
-
 INFO_SIMBOLO *UsoLocal(const char *id){
     INFO_SIMBOLO *info = NULL;
 
@@ -67,42 +65,34 @@ INFO_SIMBOLO *UsoLocal(const char *id){
         return UsoGlobal(id);
     }
     info = tablaGet(TablaSimbolosLocal, id);
-    if(info == NULL) return NULL;
+    if(info == NULL) {
+        return UsoGlobal(id);
+    }
 
     return info;
 }
-
 
 STATUS DeclararFuncion(const char *id, INFO_SIMBOLO *desc_id){ /*Control de erroes 0*/
     if(tablaGet(TablaSimbolosGlobal, id) != NULL) return ERR;
 
     /*Si no está*/
-    tablaSet(TablaSimbolosGlobal, id, desc_id);
+    if(tablaSet(TablaSimbolosGlobal, id, desc_id) == ERR) return ERR;
 
-    liberar_tabla(TablaSimbolosLocal); /*??*/
+    liberar_tabla(TablaSimbolosLocal);
     TablaSimbolosLocal = crear_tabla(TABLA_SIMBOLOS_LOCAL_TAM);
 
-    tablaSet(TablaSimbolosLocal, id, desc_id);
-    return OK;
+    return tablaSet(TablaSimbolosLocal, id, desc_id);
 
 }
 
 STATUS CerrarFuncion(){
-    if(!TablaSimbolosLocal) liberar_tabla(TablaSimbolosLocal);
-    TablaSimbolosGlobal = NULL;
+    if(TablaSimbolosLocal) liberar_tabla(TablaSimbolosLocal);
+    TablaSimbolosLocal = NULL;
     return OK;
 }
 
 void Terminar(){
-    if(!TablaSimbolosLocal) liberar_tabla(TablaSimbolosLocal);
-    if(!TablaSimbolosGlobal) liberar_tabla(TablaSimbolosGlobal);
-}
-
-
-STATUS tablaSet(TABLA_HASH *tabla, const char *id, INFO_SIMBOLO *desc_id){ 
-    return insertar_simbolo(TablaSimbolosGlobal, id, desc_id->categoria, desc_id->tipo, desc_id->clase, desc_id->adicional1, desc_id->adicional2);
-}
-INFO_SIMBOLO *tablaGet(TABLA_HASH *tabla, const char *id){
-    return buscar_simbolo(TablaSimbolosGlobal, id);
+    if(TablaSimbolosLocal) liberar_tabla(TablaSimbolosLocal);
+    if(TablaSimbolosGlobal) liberar_tabla(TablaSimbolosGlobal);
 }
 
