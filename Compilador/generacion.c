@@ -127,7 +127,7 @@ segundo se representará tal y como esté en el argumento (34).
 void escribir_operando(FILE* fpasm, char* nombre, int es_variable){ /*no estoy segura si este funcionará*/
 
 	if(es_variable == 1){
-		fprintf(fpasm, "\tpush dword _%s \n",nombre);
+		fprintf(fpasm, "\tpush dword _%s \n", nombre);
 	}else{
 		fprintf(fpasm, "\tpush dword %s \n", nombre);
 	}
@@ -613,7 +613,7 @@ void escribir_elemento_vector(FILE * fpasm, char * nombre_vector, int tam_max, i
 
 void declararFuncion(FILE * fd_asm, char * nombre_funcion, int num_var_loc) {
 
-	fprintf(fd_asm, "%s: \n", nombre_funcion);
+	fprintf(fd_asm, "_%s: \n", nombre_funcion);
 	fprintf(fd_asm, "\tpush ebp \n");
 	fprintf(fd_asm, "\tmov ebp, esp \n");
 	fprintf(fd_asm, "\tsub esp, %d \n", 4*num_var_loc);
@@ -626,10 +626,10 @@ void retornarFuncion(FILE * fd_asm, int es_variable) {
 
 	fprintf(fd_asm, "\tpop eax\n");
 	if(es_variable == 1){
-	fprintf(fd_asm, "\tmov dword eax, [eax]\n");
+		fprintf(fd_asm, "\tmov dword eax, [eax]\n");
 	}
 	
-	fprintf(fd_asm, "\tmov esp,ebp\n");
+	fprintf(fd_asm, "\tmov esp, ebp\n");
 	fprintf(fd_asm, "\tpop ebp\n");
 	fprintf(fd_asm, "\tret\n");
 
@@ -666,8 +666,8 @@ void operandoEnPilaAArgumento(FILE * fd_asm, int es_variable){
 }
 
 void asignarDestinoEnPila(FILE* fpasm, int es_variable){
-	fprintf(fpasm,"\tpop dword ebx \n");
 	fprintf(fpasm,"\tpop dword eax \n");
+	fprintf(fpasm,"\tpop dword ebx \n");
 
 	if(es_variable == 1){
 		fprintf(fpasm,"\tmov dword eax,[eax]\n");
@@ -678,9 +678,7 @@ void asignarDestinoEnPila(FILE* fpasm, int es_variable){
 
 
 void llamarFuncion(FILE * fd_asm, char * nombre_funcion, int num_argumentos) {
-
-
-	fprintf(fd_asm, "\tcall %s \n", nombre_funcion);
+	fprintf(fd_asm, "\tcall _%s \n", nombre_funcion);
 	fprintf(fd_asm, "\tadd esp, %d\n", num_argumentos*4);
 	fprintf(fd_asm, "\tpush dword eax \n");
 	return;

@@ -38,6 +38,14 @@ STATUS DeclararGlobal(const char *id, INFO_SIMBOLO *desc_id){
     return ERR; 
 }
 
+int EsLocal(const char *id) {
+    if(TablaSimbolosLocal == NULL) {
+        return 0;
+    }
+    return buscar_simbolo(TablaSimbolosLocal, id)!=NULL;
+
+}
+
 STATUS DeclararLocal(const char *id, INFO_SIMBOLO *desc_id){
     
     if(buscar_simbolo(TablaSimbolosLocal, id) == NULL){ /*Si no se encuentra, se inserta en la tabla*/

@@ -30,6 +30,7 @@ typedef struct {
     variable local de función, número de variables locales si función */
     int adicional2;
 } INFO_SIMBOLO;
+
 /* Nodo de la tabla hash */
 typedef struct nodo_hash {
     /* información del símbolo */
@@ -37,6 +38,7 @@ typedef struct nodo_hash {
     /* puntero al siguiente nodo (encadenamiento si colisión en misma celda) */
     struct nodo_hash *siguiente;
 } NODO_HASH;
+
 /* Tabla hash */
 typedef struct {
     int tam; /* tamaño de la tabla hash */

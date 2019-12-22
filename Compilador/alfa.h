@@ -1,6 +1,6 @@
 #ifndef _ALFA_H_
-
 #define _ALFA_H_
+
 #include "tablaHash.h"
 #include "tablaSimbolos.h"
 #include "generacion.h"

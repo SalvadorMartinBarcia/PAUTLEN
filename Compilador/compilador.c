@@ -9,6 +9,10 @@ FILE * out = NULL;
 int main(int argc, char ** argv) {
     extern FILE * yyin;
 
+    if(argc != 3){
+        printf("Faltan argumentos\n");
+        return 1;
+    }
     yyin = fopen(argv[1], "r");
     if(yyin == NULL) {
         return 1;
@@ -18,7 +22,6 @@ int main(int argc, char ** argv) {
         fclose(yyin);
         return 1;
     }
-    escribir_cabecera_compatibilidad(out);
     escribir_subseccion_data(out);
     escribir_cabecera_bss(out);
 
