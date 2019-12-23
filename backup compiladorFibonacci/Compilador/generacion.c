@@ -425,7 +425,7 @@ void mayor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
 	}
 
 	fprintf(fpasm, "\tcmp eax,edx\n");
-	fprintf(fpasm, "\tjge near mayorigual%d\n", etiqueta);
+	fprintf(fpasm, "\tjge near mayorigual%d\n", etiqueta);;
 	fprintf(fpasm, "\tpush dword 0\n");
 	fprintf(fpasm, "\tjmp near fin_mayorigual%d\n", etiqueta);
 
@@ -451,9 +451,9 @@ void menor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta){
 	fprintf(fpasm, "\tcmp eax,edx\n");
 	fprintf(fpasm, "\tjl near menor%d\n", etiqueta);
 	fprintf(fpasm, "\tpush dword 0\n");
-	fprintf(fpasm, "\tjmp near fin_menor%d\n", etiqueta);
+	fprintf(fpasm, "\tjmp near fin_menor%d\n", etiqueta);;
 
-	fprintf(fpasm, "menor%d:\n", etiqueta);
+	fprintf(fpasm, "menor%d:\n", etiqueta);;
 	fprintf(fpasm, "\tpush dword 1\n");
 	fprintf(fpasm, "fin_menor%d:\n", etiqueta);
 
@@ -638,10 +638,10 @@ void retornarFuncion(FILE * fd_asm, int es_variable) {
 
 
 void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros){
-	int d_ebp = 4*((num_total_parametros - pos_parametro - 1));
+	int d_ebp = 4*( 1 + (num_total_parametros - pos_parametro));
 
-	fprintf(fpasm, "pop dword eax\n");
-	fprintf(fpasm, "mov dword [ebp+%d], eax\n", d_ebp);
+	fprintf(fpasm, "\tlea eax ,[ebp + %d] \n", d_ebp);
+	fprintf(fpasm, "\tpush dword eax\n");
 
 	return;
 }
@@ -649,7 +649,7 @@ void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros)
 void escribirVariableLocal(FILE* fpasm, int posicion_variable_local){
 	int d_ebp = 4*posicion_variable_local;
 
-	fprintf(fpasm, "\tlea eax, [ebp + %d] \n", d_ebp);
+	fprintf(fpasm, "\tlea eax, [ebp - %d] \n", d_ebp);
 	fprintf(fpasm, "\tpush dword eax\n");
 
 	return;

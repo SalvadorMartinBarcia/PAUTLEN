@@ -700,7 +700,7 @@ constante_logica:
 	} | TOK_FALSE {
 		$$.tipo = BOOLEANO;
 		$$.es_direccion = 0;
-		strcpy($$.nombre,"0");
+		strcpy($$.nombre,"1");
 		fprintf(out,";R103:\t<constante_logica> ::= false\n");
 };
 
