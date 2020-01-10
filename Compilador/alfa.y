@@ -397,7 +397,7 @@ condicional:
 if_exp: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA {
  	 //COMPROBACIONES SEMANTICAS
 	if($3.tipo != BOOLEANO){
-		fprintf(stdout, "Error semántico, tipos no compatibles\n");
+		fprintf(stdout, "****Error semantico en lin %d: Condicional con condicion de tipo int.\n", linea);
 		return -1;
 	}
  	//GESTION ETIQUETA
@@ -714,7 +714,7 @@ constante_entera:
 identificador:
 	TOK_IDENTIFICADOR {
 		buscar = UsoLocal($1.nombre);
-		if(buscar != NULL && EsLocal($1.nombre)) {
+		if(buscar != NULL && !EsLocal($1.nombre)) {
 			fprintf(stdout, "***Error semantico en lin %d: Declaracion duplicada.\n", linea);
 			return -1;
 		}

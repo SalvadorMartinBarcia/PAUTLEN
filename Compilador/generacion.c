@@ -237,8 +237,6 @@ void dividir(FILE* fpasm, int es_variable_1, int es_variable_2){
     fprintf(fpasm, "\tpop dword ecx\n");
     fprintf(fpasm, "\tpop dword eax\n");
 
-    fprintf(fpasm, "\tcdq\n");
-
     if(es_variable_1 == 1){
         fprintf(fpasm, "\tmov dword eax, [eax]\n");
     }
@@ -247,7 +245,8 @@ void dividir(FILE* fpasm, int es_variable_1, int es_variable_2){
     }
     /*Se realiza la operacion*/
     fprintf(fpasm, "\tcmp ecx, 0\n");
-    fprintf(fpasm, "\tje error_div0\n"); /*Si es 0, que salte la etiqueta de error*/
+    fprintf(fpasm, "\tje fin_div0\n"); /*Si es 0, que salte la etiqueta de error*/
+    fprintf(fpasm, "\tcdq\n");
     fprintf(fpasm, "\tidiv ecx\n");
 
     /*Se guarda el res en pila*/
