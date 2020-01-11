@@ -19,7 +19,7 @@ DIGITO[0-9]
 LETRAS [a-zA-Z]
 LETDIG [a-zA-Z0-9]
 %%
-"//".*	{columna+=yyleng;} /*no se que es*/
+"//".*	{columna+=yyleng;} /*Para que no haga nada, solo lo suma*, son comentarios*/
 "main"	{columna+=yyleng;fprintf(out,";D:\t%s\n",yytext);return TOK_MAIN;}
 
 "int"	{columna+=yyleng;fprintf(out,";D:\t%s\n",yytext);return TOK_INT;}

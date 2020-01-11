@@ -5,40 +5,41 @@
 	#include "alfa.h"
 	#include "tablaHash.h"
 
-	void yyerror(char const *cad);/**/
-	extern int linea, columna, flagError;/**/
-	extern FILE *yyin;/**/
-	extern FILE *out;/**/
-	extern int yylex();/**/
+	void yyerror(char const *cad);
+	extern int linea, columna, flagError;
+	extern FILE *yyin;
+	extern FILE *out;
+	extern int yylex();
 	
-	TIPO tipo_actual;/**/
-	CLASE clase_actual;/**/
-	int tamVector;/**/
+	TIPO tipo_actual;
+	CLASE clase_actual;
+	int tamVector;
 
 
-	INFO_SIMBOLO simbolo;/**/
-	INFO_SIMBOLO *buscar;/**/
+	INFO_SIMBOLO simbolo; /*Asignar y  guardar en la tabla de simbolos*/
+	INFO_SIMBOLO *buscar /*Buscar*/
 
 	int num_no = 0;
 	int num_comparaciones = 0;
-	int num_If = 0;/**/
+	int num_If = 0;
 	int num_bucles = 0;
 	int pos_variable_local_actual = 0;
 	int num_variables_locales_actual = 0;
 	int num_parametros_actual = 0;
 	int pos_parametro_actual = 0;
 
-	int es_funcion = 0;/**/
+	int es_funcion = 0;
 	int es_llamada = 0;
 	int params = 0;
 	int hay_return = 0;
 %}
 
-%union
+%union /* Para los que devuelven cosas, se devuelven aqui*/
 {
 	tipo_atributos atributos;
 }
 
+/*Los terminales*/
 %token TOK_MAIN
 %token TOK_INT
 %token TOK_BOOLEAN
@@ -79,6 +80,8 @@
 %token TOK_FALSE
 %token TOK_ERROR
 
+
+/*Todos los de abajo, que no son terminales, que devuelvan cosas*/
 %type <atributos> constante_entera
 %type <atributos> constante_logica
 %type <atributos> constante
@@ -97,6 +100,7 @@
 
 %type <atributos> call_func
 
+/*Significa que a la derecha d estos tokens tiene uqe haber algo*/
 %left TOK_MAS TOK_MENOS TOK_OR
 %left TOK_DIVISION TOK_ASTERISCO TOK_AND
 %left TOK_NOT
@@ -142,6 +146,12 @@ tipo:
 		tipo_actual = BOOLEANO;
 		fprintf(out, ";R11:\t<tipo> ::= boolean\n");
 	};
+
+/*~~~~~~~~~~~IMPORTANTE ~~~~~~~~~~~~~~*/
+/*Van en orden*/
+/*$1 seria TOK_ARRAY, $2 tipo ...etc*/
+/* $$ es el retorno, el union de antes arriba*/
+
 
 clase_vector:
 	TOK_ARRAY tipo TOK_CORCHETEIZQUIERDO TOK_CONSTANTE_ENTERA TOK_CORCHETEDERECHO {
@@ -208,7 +218,6 @@ fn_declaration: fn_name TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESI
  	//GENERACION DE CODIGO
  	declararFuncion(out, $1.nombre, num_variables_locales_actual);	
 };
-
 
 fn_name: 
 	TOK_FUNCTION tipo TOK_IDENTIFICADOR {
@@ -486,7 +495,7 @@ exp:
 			return -1;
 		}
 		$$.tipo = ENTERO;
-		dividir(out, $1.es_direccion, $3.es_direccion);
+		dividir(out, $1.es_direccion, $3.es_direccion); /*LLAMA A LA FUNCION DE GENERACION.C*/
 		$$.es_direccion = 0;
 		fprintf(out,";R74:\t<exp> ::= <exp> / <exp>\n");
 	} | exp TOK_ASTERISCO exp {
@@ -677,7 +686,7 @@ comparacion:
 		mayor(out, $1.es_direccion, $3.es_direccion, num_comparaciones++);
 		fprintf(out,";R98:\t<comparacion> ::= <exp> > <exp>\n");
 	};
-
+/*El no terminal constante puede convertirse en los no terminales const logica y const entera*/
 constante:
 	constante_logica {
 		$$.tipo = $1.tipo;
@@ -685,12 +694,12 @@ constante:
 		strcpy($$.nombre, $1.nombre);
 		fprintf(out,";R99:\t<constante> ::= <constante_logica>\n");
 	} | constante_entera {
-		$$.tipo = $1.tipo;
+		$$.tipo = $1.tipo; /*Le asgina a constante.tipo el valor del tipo de const entera*/
 		$$.es_direccion = $1.es_direccion;
 		strcpy($$.nombre, $1.nombre);
 		fprintf(out,";R100:\t<constante> ::= <constante_entera>\n");
 	};
-
+/*Definicion de esos dos no terminales*/
 constante_logica:
 	TOK_TRUE {
 		$$.tipo = BOOLEANO;
