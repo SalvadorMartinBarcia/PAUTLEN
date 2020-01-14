@@ -1,3 +1,0 @@
-Salvador Martin Barcia, Blanca Mercado Molero.
-Para compilar con alfalib hay que usar la ruta alfalib/alfalib.o
-ya que esta en un subdirectorio para que no se borre al hacer make clean
