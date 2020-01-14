@@ -59,6 +59,7 @@
 %token TOK_LLAVEIZQUIERDA
 %token TOK_LLAVEDERECHA
 %token TOK_ASIGNACION
+%token TOK_MODULO
 %token TOK_MAS
 %token TOK_MENOS
 %token TOK_DIVISION
@@ -83,6 +84,7 @@
 %type <atributos> constante_logica
 %type <atributos> constante
 %type <atributos> exp
+%type <atributos> id
 
 %type <atributos> if_exp
 %type <atributos> if_exp_sentencias
@@ -300,6 +302,8 @@ sentencia:
 sentencia_simple:
 	asignacion {
 		fprintf(out, ";R34:\t<sentencia_simple> ::= <asignacion>\n");
+	} | modulo {
+		fprintf(out, ";R36:\t<sentencia_simple> ::= <modulo>\n");
 	} | lectura {
 		fprintf(out, ";R35:\t<sentencia_simple> ::= <lectura>\n");
 	} | escritura {
@@ -314,6 +318,78 @@ bloque:
 	| bucle {
 		fprintf(out, ";R41:\t<bloque> ::= <bucle>\n");
 	};
+
+modulo:
+	id TOK_MODULO exp { 
+		buscar = UsoLocal($1.nombre);
+		if(buscar==NULL) {
+			fprintf(stdout, "***Error semantico en lin %d: Acceso a variable no declarada (%s).\n", linea, $1.nombre);
+			return -1;
+		}
+		if(buscar->categoria == FUNCION) {
+			fprintf(stdout, "***Error semantico en lin %d: Asignacion incompatible.\n", linea);
+			return -1;
+		}
+	
+		if(buscar->tipo != $3.tipo) {
+			fprintf(stdout, "***Error semantico en lin %d: Asignacion incompatible.\n", linea);
+			return -1;
+		}
+		
+		if (UsoGlobal($1.nombre) == NULL) {
+		/* Estamos en una funcion y la variable es local */
+			if(buscar->categoria == PARAMETRO) {
+				modulo(out, $1.es_direccion, $3.es_direccion);		
+				escribirParametro(out, buscar->adicional1, num_parametros_actual + 2, 0);
+			} else {
+				modulo(out, $1.es_direccion, $3.es_direccion); //CUIDADO, ESTO ES CON 0 PORQUE NO SE BUSCARÁ UNA DIRECCION !!!!!
+				escribirParametro(out, buscar->adicional1, 0, 0);
+			}
+		}
+		else{
+			modulo(out, $1.es_direccion, $3.es_direccion);
+			asignar(out, $1.nombre, 0);
+			fprintf(out, ";R43:\t<modulo> ::= <identificador> = <exp>\n");
+		}
+
+	} | elemento_vector TOK_MODULO exp {
+		if ($1.tipo != $3.tipo){
+			fprintf(stdout, "***Error semantico en lin %d: Asignacion incompatible.\n", linea);
+			return -1;
+		}
+		modulo(out, $1.es_direccion, $3.es_direccion);
+ 		asignarDestinoEnPila(out, $3.es_direccion);
+		fprintf(out, ";R44 :\t<Modulo> ::= <elemento_vector> = <exp>\n");
+	};
+
+id:
+	TOK_IDENTIFICADOR{
+		strcpy($$.nombre, $1.nombre);
+    	buscar = UsoLocal($1.nombre);
+		if(buscar == NULL) {
+			fprintf(stdout, "***Error semantico en lin %d : Acceso a variable no declarada (%s).\n", linea, $1.nombre);
+			return -1;
+		}
+		if (UsoGlobal($1.nombre) == NULL) {
+		/* Estamos en una funcion y la variable es local */
+			if(buscar->categoria == PARAMETRO) {
+				escribirVariableLocal(out, (num_parametros_actual-buscar->adicional1)+1);
+			} else {
+				escribirVariableLocal(out, -(buscar->adicional1+1));
+			}
+
+		} else {
+			if(buscar->categoria==FUNCION) {
+				/* NUNCA SUCEDE */
+				fprintf(stdout,"Identificador no valido\n");
+				return -1;
+			}
+			escribir_operando(out, $1.nombre, 1);
+
+		}
+		$$.es_direccion = 1;
+		$$.tipo = buscar->tipo;
+	}
 
 asignacion:
 	TOK_IDENTIFICADOR TOK_ASIGNACION exp {
@@ -337,9 +413,9 @@ asignacion:
 		if (UsoGlobal($1.nombre) == NULL) {
 		/* Estamos en una funcion y la variable es local */
 			if(buscar->categoria == PARAMETRO) {
-				escribirParametro(out, buscar->adicional1, num_parametros_actual+2);
+				escribirParametro(out, buscar->adicional1, num_parametros_actual+2, $3.es_direccion);
 			} else {
-				escribirParametro(out, buscar->adicional1, 0);
+				escribirParametro(out, buscar->adicional1, 0, $3.es_direccion);
 			}
 		}
 		else{
